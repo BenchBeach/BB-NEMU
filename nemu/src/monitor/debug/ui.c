@@ -74,7 +74,9 @@ static int cmd_x(char*args){
 		printf("lack of options ,please input some .\n");
 		return 0; 
 	}
-	printf("%s",args);
+	// printf("%s",args);
+	char *num = strtok(args," ");
+	printf("%s",num);
 	return 0;
 }
 
