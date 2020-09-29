@@ -74,12 +74,7 @@ static int cmd_x(char*args){
 		printf("lack of options ,please input some .\n");
 		return 0; 
 	}
-	uint32_t num, addr;
-	sscanf(args, "%d%x", &num, &addr);
-	while(num--) {
-		printf("address 0x%x: 0x%x\n", addr, swaddr_read(addr, 4));
-		addr += 4;
-	}
+	printf("%s",args);
 	return 0;
 }
 
