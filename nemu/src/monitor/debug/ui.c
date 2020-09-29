@@ -69,6 +69,14 @@ static int cmd_si(char*args){
 	return 0;
 } 
 
+static int cmd_x(char*args){
+	if(args == NULL) {
+		printf("lack of options ,please input some .\n");
+		return 0; 
+	}
+	return 0;
+}
+
 static int cmd_help(char *args);
 
 static struct {
@@ -81,7 +89,7 @@ static struct {
 	{ "q", "Exit NEMU", cmd_q },
 	{ "si", "Step into implementation of N instructions after the suspension of execution.When N is notgiven,the default is 1.", cmd_si},
 	{ "info", "r for print register state \n w for print watchpoint information", cmd_info},
-	
+	{ "x", "Scan the memory", cmd_x },
 	/* TODO: Add more commands */
 
 };
