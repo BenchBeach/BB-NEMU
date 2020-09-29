@@ -80,10 +80,11 @@ static int cmd_x(char*args){
 	// printf("%s\n%s\n",num, addr);
 	uint32_t num, addr;
 	sscanf(args, "%d%x", &num, &addr);
-	while (num--){
-		printf("address 0x%x: 0x%x\n", addr, swaddr_read(addr, 4));
-		addr += 4;
-	}
+	printf("%d\n%x\n",num,addr);
+	// while (num--){
+	// 	printf("address 0x%x: 0x%x\n", addr, swaddr_read(addr, 4));
+	// 	addr += 4;
+	// }
 	
 	return 0;
 }
