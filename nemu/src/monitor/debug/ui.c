@@ -89,12 +89,11 @@ static int cmd_x(char*args){
 		return 0; 
 	}
 	num=atoi(num_s);            
-	char *expr = strtok(NULL, "");
-	if(expr == NULL){
-			printf("scan for what? \n");
-			return 0;
-		}
-		printf("%s\n",expr);
+	char *arg = strtok(NULL, "");
+	if(arg == NULL){
+		printf("scan for what? \n");
+		return 0;
+	}
 	return 0;
 }
 
