@@ -79,7 +79,7 @@ static int cmd_x(char*args){
 	// char *addr = strtok(NULL, " ");
 	// printf("%s\n%s\n",num, addr);
 	uint32_t num, addr;
-	sscanf(args, "%d%d", &num, &addr);
+	sscanf(args, "%d%x", &num, &addr);
 	printf("%x\n", swaddr_read(addr, num));
 	return 0;
 }
