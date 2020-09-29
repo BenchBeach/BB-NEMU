@@ -28,6 +28,7 @@ char* rl_gets() {
 }
 
 static int cmd_c(char *args) {
+	printf("123");
 	cpu_exec(-1);
 	return 0;
 }
@@ -46,7 +47,7 @@ static struct {
 	{ "help", "Display informations about all supported commands", cmd_help },
 	{ "c", "Continue the execution of the program", cmd_c },
 	{ "q", "Exit NEMU", cmd_q },
-
+	//{"si"}
 	/* TODO: Add more commands */
 
 };
