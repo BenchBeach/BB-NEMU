@@ -76,7 +76,9 @@ static int cmd_x(char*args){
 	}
 	// printf("%s",args);
 	char *num = strtok(args," ");
-	printf("%s",num);
+	char *addr = strtok(NULL, " ");
+	printf("%s\n%s\n",num, addr);
+	//printf("%s",num);
 	return 0;
 }
 
