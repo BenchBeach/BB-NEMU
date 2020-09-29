@@ -75,10 +75,12 @@ static int cmd_x(char*args){
 		return 0; 
 	}
 	// printf("%s",args);
-	char *num = strtok(args," ");
-	char *addr = strtok(NULL, " ");
-	printf("%s\n%s\n",num, addr);
-	//printf("%s",num);
+	// char *num = strtok(args," ");
+	// char *addr = strtok(NULL, " ");
+	// printf("%s\n%s\n",num, addr);
+	uint32_t num, addr;
+	sscanf(args, "%d%d", &num, &addr);
+	printf("%x\n", swaddr_read(addr, num));
 	return 0;
 }
 
