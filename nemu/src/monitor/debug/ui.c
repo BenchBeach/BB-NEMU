@@ -50,7 +50,7 @@ static int cmd_si(char*args){
 
  static int cmd_info(char*args){
 	if(args == NULL) {
-		printf("lack of options ,please input some .");
+		printf("lack of options ,please input some .\n");
 		return 0; 
 	}
 	char opt;
