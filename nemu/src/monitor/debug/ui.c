@@ -48,14 +48,14 @@ static int cmd_si(char*args){
 	return 0;
 }
 
-/* static int cmd_info(char*args){
+ static int cmd_info(char*args){
 	if(args == NULL) {
 		printf("lack of options ,please input some .");
 		return 0; 
 	}
 	char opt;
 	sscanf(args, " %c", &opt);
-	if(opt=="r"){
+	if(opt=='r'){
 		printf("eax: 0x%08x \n", cpu.eax);
 		printf("ecx: 0x%08x \n", cpu.ecx);
 		printf("edx: 0x%08x \n", cpu.edx);
@@ -67,7 +67,7 @@ static int cmd_si(char*args){
 		printf("eip: 0x%08x \n", cpu.eip);
 	}
 	return 0;
-} */
+} 
 
 static int cmd_help(char *args);
 
@@ -80,7 +80,7 @@ static struct {
 	{ "c", "Continue the execution of the program", cmd_c },
 	{ "q", "Exit NEMU", cmd_q },
 	{ "si", "Step into implementation of N instructions after the suspension of execution.When N is notgiven,the default is 1.", cmd_si},
-	//{ "info", "r for print register state \n w for print watchpoint information", cmd_info},
+	{ "info", "r for print register state \n w for print watchpoint information", cmd_info},
 	/* TODO: Add more commands */
 
 };
