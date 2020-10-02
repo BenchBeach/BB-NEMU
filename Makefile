@@ -50,7 +50,6 @@ clean: clean-cpp
 	-rm -rf obj 2> /dev/null
 	-rm -f *log.txt entry $(FLOAT) 2> /dev/null
 
-
 ##### some convinient rules #####
 
 USERPROG := obj/testcase/mov
@@ -73,3 +72,6 @@ test: $(nemu_BIN) $(testcase_BIN) entry
 
 submit: clean
 	cd .. && zip -r $(STU_ID).zip $(shell pwd | grep -o '[^/]*$$')
+
+count:
+	bash count.sh ./nemu/
