@@ -7,7 +7,10 @@
 #include <regex.h>
 
 enum {
-	NOTYPE = 256, EQ
+	NOTYPE = 0, PLUS, MINUS, STAR, DIV,                                // this write style make each ++, broad my horizon!!!
+	EQ, NOTEQ, OR, AND,
+ 	NOT, NEG, POINTER,
+	LB, RB, HEX, DEC, REG,
 
 	/* TODO: Add more token types */
 
@@ -22,9 +25,21 @@ static struct rule {
 	 * Pay attention to the precedence level of different rules.
 	 */
 
-	{" +",	NOTYPE},				// spaces
-	{"\\+", '+'},					// plus
-	{"==", EQ}						// equal
+	{" +",	NOTYPE},				//spaces
+	{"\\+", PLUS},					//plus
+	{"-", MINUS},					//minus
+	{"\\*", STAR},					//star
+	{"/", DIV},						//div
+	{"==", EQ},						//eq
+	{"!=", NOTEQ},					//noteq
+	{"&&", AND},					//and
+	{"\\|\\|", OR},					//or
+	{"!", NOT},						//not
+	{"\\(", LB},					//lb
+	{"\\)", RB},					//rb
+	{"0[xX][0-9a-zA-Z]+", HEX},		//hex
+	{"[0-9]+", DEC},				//dec
+	{"\\$[a-z]+", REG}				//reg
 };
 
 #define NR_REGEX (sizeof(rules) / sizeof(rules[0]) )
@@ -67,10 +82,9 @@ static bool make_token(char *e) {
 		/* Try all rules one by one. */
 		for(i = 0; i < NR_REGEX; i ++) {
 			if(regexec(&re[i], e + position, 1, &pmatch, 0) == 0 && pmatch.rm_so == 0) {
-				char *substr_start = e + position;
-				int substr_len = pmatch.rm_eo;
-
-				Log("match rules[%d] = \"%s\" at position %d with len %d: %.*s", i, rules[i].regex, position, substr_len, substr_len, substr_start);
+				// char *substr_start = e + position;
+				 int substr_len = pmatch.rm_eo;
+				// Log("match rules[%d] = \"%s\" at position %d with len %d: %.*s", i, rules[i].regex, position, substr_len, substr_len, substr_start);
 				position += substr_len;
 
 				/* TODO: Now a new token is recognized with rules[i]. Add codes
@@ -79,9 +93,29 @@ static bool make_token(char *e) {
 				 */
 
 				switch(rules[i].token_type) {
-					default: panic("please implement me");
+					case NOTYPE:
+						break;											//It's blank!
+					case HEX:case DEC:case REG:
+						strncpy(tokens[nr_token].str, e + position - substr_len, substr_len);//regs or number
+						tokens[nr_token].str[substr_len] = '\0';		//add '\0', it's very important
+						//WARNING: 64 may be a little small...
+					default:
+						if(rules[i].token_type == MINUS) {	//solve neg
+							if(nr_token == 0) tokens[nr_token++].type = NEG;
+							else if(PLUS <= tokens[nr_token - 1].type && tokens[nr_token - 1].type <= LB) {
+								tokens[nr_token++].type = NEG;
+							} else tokens[nr_token++].type = MINUS;
+						} else if(rules[i].token_type == STAR) { //solve pointer
+							if(nr_token == 0) tokens[nr_token++].type = POINTER;
+							else if(PLUS <= tokens[nr_token - 1].type && tokens[nr_token - 1].type <= LB) {
+								tokens[nr_token++].type = POINTER;
+							} else tokens[nr_token++].type = STAR;
+						} else {
+							tokens[nr_token++].type = rules[i].token_type;	//other	
+						}
+						break;
+					//panic("please implement me");
 				}
-
 				break;
 			}
 		}
@@ -93,6 +127,7 @@ static bool make_token(char *e) {
 	}
 
 	return true; 
+	// I am wander what license should i take if i push it to github?
 }
 
 uint32_t expr(char *e, bool *success) {
