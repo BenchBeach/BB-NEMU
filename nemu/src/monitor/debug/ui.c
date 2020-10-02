@@ -100,11 +100,11 @@ static int cmd_x(char*args){
 		printf("unexpected token before something\n");
 		return 0;
 	}
-	printf("%d\n",addr);
-	//  while (num--){
-	//  	printf("address 0x%x: 0x%x\n", addr, swaddr_read(addr, 4));
-	//  	addr += 4;
-	//  }
+	// printf("%d\n",addr);
+	  while (num--){
+	  	printf("address 0x%x: 0x%x\n", addr, swaddr_read(addr, 4));
+	  	addr += 4;
+	 }
 	return 0;
 }
 
