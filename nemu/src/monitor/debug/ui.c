@@ -97,7 +97,7 @@ static int cmd_x(char*args){
 	}
 	addr = expr(arg, &success);
 	if(!success) {
-		printf("unexpected token before something");
+		printf("unexpected token before something\n");
 		return 0;
 	}
 	 while (num--){
