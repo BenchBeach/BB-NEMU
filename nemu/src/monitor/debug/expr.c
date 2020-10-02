@@ -16,6 +16,8 @@ enum {
 
 };
 
+const char *PRE = "04455331266600000";	// priority level like reversePoland(chinglish
+
 static struct rule {
 	char *regex;
 	int token_type;
@@ -130,14 +132,94 @@ static bool make_token(char *e) {
 	// I am wander what license should i take if i push it to github?
 }
 
+bool check_parentheses(int l, int r, bool *success) {//Check the parentheses, use stack.
+	*success = true;
+	if(l > r) return *success = false;
+	int cnt = 0, flag = 1, i;		//A simple stack
+	for(i = l;i <= r; i++){
+		if(tokens[i].type == LB) ++cnt;
+		if(tokens[i].type == RB) --cnt;
+		if(cnt < 0)	return *success = false;//Bad
+		if(i != r && cnt == 0) flag = 0;
+	}
+	if(cnt != 0) return *success = false;
+	return flag;
+}
+
+uint32_t eval(int l, int r, bool *success) {
+	*success = true;
+	if(l > r) return *success = false;// Bad Expression !!
+	if(l == r){				//It's a number or reg, otherwise bad expression
+		uint32_t tmp;
+		if(tokens[l].type == HEX) {
+			sscanf(tokens[l].str, "%x", &tmp);
+			return tmp;
+		} else if(tokens[l].type == DEC) {
+			sscanf(tokens[l].str, "%d", &tmp);
+			return tmp;
+		} else if(tokens[l].type == REG) {	//read register
+			if(strcmp(tokens[l].str + 1, "eax") == 0) return cpu.eax;
+			if(strcmp(tokens[l].str + 1, "ecx") == 0) return cpu.ecx;
+			if(strcmp(tokens[l].str + 1, "edx") == 0) return cpu.edx;
+			if(strcmp(tokens[l].str + 1, "ebx") == 0) return cpu.ebx;
+			if(strcmp(tokens[l].str + 1, "esp") == 0) return cpu.esp;
+			if(strcmp(tokens[l].str + 1, "ebp") == 0) return cpu.ebp;
+			if(strcmp(tokens[l].str + 1, "esi") == 0) return cpu.esi;
+			if(strcmp(tokens[l].str + 1, "edi") == 0) return cpu.edi;
+			if(strcmp(tokens[l].str + 1, "eip") == 0) return cpu.eip;
+			return *success = false; 
+		}
+		return *success = false;
+	}
+	bool flag = check_parentheses(l, r, success);
+	if(!success) return 0;						//Bad
+	if(flag) return eval(l + 1, r - 1, success);//OK, remove parentheses
+	//Now we should find the dominant token
+	int now = -1, type = 0x3f3f3f3f, cnt = 0, i;
+	for(i = l; i <= r; i++) {
+		if(tokens[i].type == LB) ++cnt;
+		if(tokens[i].type == RB) --cnt;
+		if(cnt != 0) continue;	//In mathched parentheses, pass
+		if(PLUS <= tokens[i].type && tokens[i].type <= POINTER) {
+			if(type >= PRE[tokens[i].type]) type = PRE[tokens[i].type], now = i;
+		}
+	}
+	assert(now != -1);
+	uint32_t a, b;
+	//solve '!'
+	if(tokens[now].type >= NOT) {
+		//if type>=not, which means other token has been solved
+		//so the first token must be NOT or NEG or POINTER
+		b = eval(l + 1, r, success);
+		if(!(*success)) return *success = false;
+		if(tokens[l].type == NOT) return !b;
+		if(tokens[l].type == NEG) return -b;
+		if(tokens[l].type == POINTER) return swaddr_read(b, 1);
+		return *success = false;
+	}
+	a = eval(l, now - 1, success);
+	if(!(*success))return *success = false;
+	b = eval(now + 1, r ,success);
+	if(!(*success))return *success = false;
+	if(tokens[now].type == PLUS) return a + b;
+	if(tokens[now].type == STAR) return a * b;
+	if(tokens[now].type == DIV) return a / b;	
+	if(tokens[now].type == MINUS) return a - b;
+	if(tokens[now].type == EQ) return a == b;
+	if(tokens[now].type == NOTEQ) return a != b;
+	if(tokens[now].type == AND) return a && b;
+	if(tokens[now].type == OR) return a || b;
+	return 0;
+}
+
 uint32_t expr(char *e, bool *success) {
 	if(!make_token(e)) {
 		*success = false;
 		return 0;
 	}
-
 	/* TODO: Insert codes to evaluate the expression. */
-	panic("please implement me");
-	return 0;
+	//panic("please implement me");
+	//Calculate the value
+	return eval(0, nr_token - 1, success);//call eval to calculate the value of expression e
 }
 
