@@ -113,6 +113,43 @@ static int cmd_p(char*args){
 		printf("lack of options ,please input some .\n");
 		return 0; 
 	}
+	bool suc;
+	uint32_t ans = expr(args, &suc);
+	if(!suc) {
+		printf("unexpected token\n");
+		return 0;
+	}
+	printf("Expression %s : 0x%x\n", args, ans);
+	return 0;
+}
+
+static int cmd_w(char *args) {
+	if(args == NULL){ 
+		printf("lack of sth\n");
+		return 0;
+	}
+	int id = insertExpr(args);
+	if(id == -1) {
+		printf("\033[1;31mInvalid expression\n\033[0m");
+		return 0;
+	}
+	printf("Add watchpoint %d\n", id);
+	return 0;
+}
+
+static int cmd_d(char *args) {
+	if(args == NULL){ 
+		printf("lack of sth\n");
+		return 0;
+	}
+	int id;
+	sscanf(args, "%d", &id);
+	int ans = removeNode(id);//remove a node
+	if(ans == 0) {
+		printf("\033[1;31mWatchpoint %d doesn't exist\n\033[0m", id);
+	} else {
+		printf("Delete watchpoint %d successfully\n", id);
+	}
 	return 0;
 }
 
@@ -129,7 +166,9 @@ static struct {
 	{ "si", "Step into implementation of N instructions after the suspension of execution.When N is notgiven,the default is 1.", cmd_si},
 	{ "info", "r for print register state \n w for print watchpoint information", cmd_info},
 	{ "p", "Expression evaluation", cmd_p}, //   should before scan :(  waste time
-	{ "x", "Scan the memory", cmd_x },
+	{ "x", "Scan the memory", cmd_x },        // i just a poor boy~~~i just wangt to rest~~~
+	{ "w", "Add a watchpoint", cmd_w },
+	{ "d", "Delete a watchpoint", cmd_d },
 	/* TODO: Add more commands */
 
 };
