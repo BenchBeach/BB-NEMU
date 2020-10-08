@@ -65,6 +65,12 @@ static int cmd_si(char*args){
 		printf("esi: 0x%08x \n", cpu.esi);
 		printf("edi: 0x%08x \n", cpu.edi);
 		printf("eip: 0x%08x \n", cpu.eip);
+	}else if(opt == 'w') {
+		WP *h = getHead();
+		while(h != NULL) {
+			printf("watchpoint %d : %s\n", h->NO, h->expr);
+			h = h->next;
+		}
 	}
 	return 0;
 } 
