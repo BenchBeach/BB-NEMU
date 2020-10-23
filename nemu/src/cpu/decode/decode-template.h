@@ -42,7 +42,7 @@ make_helper(concat(decode_si_, SUFFIX)) {
 	 *
 	op_src->simm = ???
 	 */
-	panic("please implement me");
+	panic("please implement me1");
 
 	op_src->val = op_src->simm;
 
