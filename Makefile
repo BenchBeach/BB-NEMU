@@ -10,7 +10,7 @@ LIB_COMMON_DIR := lib-common
 LIBC_INC_DIR := $(LIB_COMMON_DIR)/uclibc/include
 LIBC_LIB_DIR := $(LIB_COMMON_DIR)/uclibc/lib
 LIBC := $(LIBC_LIB_DIR)/libc.a
-#FLOAT := obj/$(LIB_COMMON_DIR)/FLOAT/FLOAT.a
+FLOAT := obj/$(LIB_COMMON_DIR)/FLOAT/FLOAT.a
 
 include config/Makefile.git
 include config/Makefile.build
@@ -50,10 +50,12 @@ clean: clean-cpp
 	-rm -rf obj 2> /dev/null
 	-rm -f *log.txt entry $(FLOAT) 2> /dev/null
 
+
 ##### some convinient rules #####
 
- #USERPROG := obj/testcase/mov
-USERPROG := obj/testcase/hello
+# USERPROG := obj/testcase/mov
+USERPROG := obj/testcase/quadratic-eq.o
+# USERPROG := obj/testcase/if-else
 ENTRY := $(USERPROG)
 
 entry: $(ENTRY)
@@ -75,4 +77,4 @@ submit: clean
 	cd .. && zip -r $(STU_ID).zip $(shell pwd | grep -o '[^/]*$$')
 
 count:
-	bash count.sh ./nemu/
+	bash count.sh ./nemu/	
