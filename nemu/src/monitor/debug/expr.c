@@ -5,19 +5,20 @@
  */
 #include <sys/types.h>
 #include <regex.h>
+#include <elf.h>
 
 enum {
-	NOTYPE = 0, PLUS, MINUS, STAR, DIV,                                // this write style make each ++, broad my horizon!!!
+	NOTYPE = 0, PLUS, MINUS, STAR, DIV,
 	EQ, NOTEQ, OR, AND,
  	NOT, NEG, POINTER,
-	LB, RB, HEX, DEC, REG,
+	LB, RB, HEX, DEC, REG, MARK
+	//WARNING!! NOTEQ first and then NOT !!
+	//WARNING!! HEX first and then DEC !!
 
 	/* TODO: Add more token types */
 
 };
-
-const char *PRE = "04455331266600000";	// priority level like reversePoland(chinglish
-
+const char *PRE = "044553312666000000";	//guess what?
 static struct rule {
 	char *regex;
 	int token_type;
@@ -41,7 +42,8 @@ static struct rule {
 	{"\\)", RB},					//rb
 	{"0[xX][0-9a-zA-Z]+", HEX},		//hex
 	{"[0-9]+", DEC},				//dec
-	{"\\$[a-z]+", REG}				//reg
+	{"\\$[a-z]+", REG},				//reg
+	{"[a-zA-Z][A-Za-z0-9_]*", MARK},		//mark
 };
 
 #define NR_REGEX (sizeof(rules) / sizeof(rules[0]) )
@@ -67,10 +69,10 @@ void init_regex() {
 
 typedef struct token {
 	int type;
-	char str[32];
+	char str[64];
 } Token;
 
-Token tokens[32];
+Token tokens[64];
 int nr_token;
 
 static bool make_token(char *e) {
@@ -84,9 +86,9 @@ static bool make_token(char *e) {
 		/* Try all rules one by one. */
 		for(i = 0; i < NR_REGEX; i ++) {
 			if(regexec(&re[i], e + position, 1, &pmatch, 0) == 0 && pmatch.rm_so == 0) {
-				// char *substr_start = e + position;
-				 int substr_len = pmatch.rm_eo;
-				// Log("match rules[%d] = \"%s\" at position %d with len %d: %.*s", i, rules[i].regex, position, substr_len, substr_len, substr_start);
+				//char *substr_start = e + position;
+				int substr_len = pmatch.rm_eo;
+				//Log("match rules[%d] = \"%s\" at position %d with len %d: %.*s", i, rules[i].regex, position, substr_len, substr_len, substr_start);
 				position += substr_len;
 
 				/* TODO: Now a new token is recognized with rules[i]. Add codes
@@ -97,7 +99,7 @@ static bool make_token(char *e) {
 				switch(rules[i].token_type) {
 					case NOTYPE:
 						break;											//It's blank!
-					case HEX:case DEC:case REG:
+					case HEX:case DEC:case REG:case MARK:
 						strncpy(tokens[nr_token].str, e + position - substr_len, substr_len);//regs or number
 						tokens[nr_token].str[substr_len] = '\0';		//add '\0', it's very important
 						//WARNING: 64 may be a little small...
@@ -129,7 +131,6 @@ static bool make_token(char *e) {
 	}
 
 	return true; 
-	// I am wander what license should i take if i push it to github?
 }
 
 bool check_parentheses(int l, int r, bool *success) {//Check the parentheses, use stack.
@@ -145,6 +146,8 @@ bool check_parentheses(int l, int r, bool *success) {//Check the parentheses, us
 	if(cnt != 0) return *success = false;
 	return flag;
 }
+
+uint32_t getAddressFromMark(char *mark, bool *success);
 
 uint32_t eval(int l, int r, bool *success) {
 	*success = true;
@@ -168,6 +171,8 @@ uint32_t eval(int l, int r, bool *success) {
 			if(strcmp(tokens[l].str + 1, "edi") == 0) return cpu.edi;
 			if(strcmp(tokens[l].str + 1, "eip") == 0) return cpu.eip;
 			return *success = false; 
+		} else if(tokens[l].type == MARK) {		//find mark
+			return getAddressFromMark(tokens[l].str, success);
 		}
 		return *success = false;
 	}
@@ -222,4 +227,3 @@ uint32_t expr(char *e, bool *success) {
 	//Calculate the value
 	return eval(0, nr_token - 1, success);//call eval to calculate the value of expression e
 }
-
