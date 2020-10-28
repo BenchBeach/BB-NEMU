@@ -56,7 +56,8 @@ clean: clean-cpp
 # USERPROG := obj/testcase/mov
 USERPROG := obj/testcase/string
 # USERPROG := obj/testcase/if-else
-ENTRY := $(USERPROG)
+#ENTRY := $(USERPROG)
+ENTRY :=  $(kernel_BIN)
 
 entry: $(ENTRY)
 	objcopy -S -O binary $(ENTRY) entry
