@@ -181,7 +181,7 @@ typedef struct {
 }PartOfStackFrame ;
 static int cmd_bt(char* args){
 	if (args != NULL){
-		printf("Wrong Command!");
+		printf("Wrong Command!\n");
 		return 0;
 	}
 	PartOfStackFrame EBP;
